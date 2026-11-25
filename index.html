@@ -179,6 +179,7 @@ body[data-portrait="1"] #rotate { display: flex; }
 .marks { display: flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 16px; color: var(--muted); }
 .mk { width: 38px; height: 32px; border-radius: 8px; border: 1.5px solid rgba(243,233,214,.3); background: transparent; color: var(--paper); font-size: 16px; cursor: pointer; }
 .mk.on { background: var(--paper); color: var(--ink); font-weight: 700; }
+.mk-free { font-size: 13px; color: var(--gold); padding: 2px 7px; border-radius: 6px; background: rgba(226,182,90,.15); border: 1px solid rgba(226,182,90,.45); }
 .mk.flip { margin-left: auto; }
 .cast-tip { font-size: 15px; color: var(--muted); line-height: 1.6; }
 .view-wrap { position: absolute; border-radius: 6px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
@@ -187,7 +188,7 @@ body[data-portrait="1"] #rotate { display: flex; }
 .view-tools { position: absolute; display: flex; align-items: center; gap: 18px; height: 56px; }
 .sizes { display: flex; gap: 6px; }
 .zoom { display: flex; align-items: center; gap: 10px; font-size: 18px; color: #cfc6b4; }
-.zoom input { width: 220px; accent-color: var(--gold); }
+.zoom input { width: 176px; accent-color: var(--gold); }
 .view-tools .tip { font-size: 16px; color: var(--muted); flex: 1; }
 .btn.rec { font-size: 26px; padding: 10px 34px; }
 .monitor-panel { position: absolute; left: 1596px; top: 92px; width: 310px; }
@@ -443,8 +444,9 @@ const LOCATIONS = {
     name: "方塔园", sub: "北宋 · 兴圣教寺塔", map: [805, 725],
     landmark: { name: "方塔", x: 400, y: 420, box: [260, 30, 545, 840] },
     horizon: 800,
+    ground: { xMin: 120, xMax: 1420, yMin: 835, yMax: 992, hMin: 290, hMax: 500 },
     marks: [
-      { x: 640, y: 980, h: 480 }, { x: 900, y: 900, h: 370 }, { x: 1180, y: 990, h: 500 },
+      { x: 640, y: 955, h: 455 }, { x: 900, y: 895, h: 370 }, { x: 1180, y: 965, h: 470 },
     ],
     moods: {
       dawn:  { calm: .6, tense: .2, sad: .2 },
@@ -463,8 +465,9 @@ const LOCATIONS = {
     name: "醉白池", sub: "江南园林 · 上海五大古典园林之一", map: [610, 620],
     landmark: { name: "池上亭", x: 1060, y: 470, box: [880, 290, 1240, 640] },
     horizon: 560,
+    ground: { xMin: 110, xMax: 1420, yMin: 775, yMax: 992, hMin: 265, hMax: 475, yMinAt: (x) => (x < 330 ? 775 + Math.max(0, x - 110) * 0.68 : 925) },
     marks: [
-      { x: 520, y: 985, h: 470 }, { x: 820, y: 975, h: 450 }, { x: 150, y: 840, h: 330 },
+      { x: 520, y: 965, h: 450 }, { x: 820, y: 960, h: 445 }, { x: 165, y: 835, h: 325 },
     ],
     moods: {
       dawn:  { calm: .7, love: .2, sad: .1 },
@@ -483,8 +486,9 @@ const LOCATIONS = {
     name: "广富林遗址", sub: "上海之根 · 古文化遗址公园", map: [660, 345],
     landmark: { name: "水上展馆", x: 300, y: 410, box: [20, 300, 600, 500] },
     horizon: 552,
+    ground: { xMin: 120, xMax: 1420, yMin: 835, yMax: 992, hMin: 345, hMax: 500 },
     marks: [
-      { x: 520, y: 900, h: 430 }, { x: 880, y: 860, h: 380 }, { x: 1180, y: 950, h: 480 },
+      { x: 520, y: 900, h: 415 }, { x: 880, y: 865, h: 375 }, { x: 1180, y: 945, h: 455 },
     ],
     moods: {
       dawn:  { calm: .6, tense: .3, sad: .1 },
@@ -503,8 +507,9 @@ const LOCATIONS = {
     name: "泰晤士小镇", sub: "松江新城 · 英式风情小镇", map: [960, 390],
     landmark: { name: "尖顶教堂", x: 1180, y: 380, box: [1080, 40, 1430, 730] },
     horizon: 690,
+    ground: { xMin: 140, xMax: 1400, yMin: 800, yMax: 992, hMin: 285, hMax: 505, yMinAt: (x) => (x > 760 ? 800 : 855) },
     marks: [
-      { x: 560, y: 950, h: 460 }, { x: 820, y: 870, h: 360 }, { x: 300, y: 1000, h: 520 },
+      { x: 560, y: 945, h: 450 }, { x: 820, y: 865, h: 360 }, { x: 300, y: 970, h: 480 },
     ],
     moods: {
       dawn:  { calm: .5, love: .3, joy: .2 },
@@ -523,8 +528,9 @@ const LOCATIONS = {
     name: "车墩影视基地", sub: "上海影视乐园 · 老上海街景", map: [1215, 740],
     landmark: { name: "叮叮车", x: 1220, y: 600, box: [1110, 400, 1335, 790] },
     horizon: 700,
+    ground: { xMin: 160, xMax: 1150, yMin: 820, yMax: 992, hMin: 310, hMax: 500 },
     marks: [
-      { x: 480, y: 940, h: 470 }, { x: 760, y: 880, h: 380 }, { x: 980, y: 990, h: 500 },
+      { x: 480, y: 935, h: 440 }, { x: 760, y: 880, h: 375 }, { x: 980, y: 965, h: 470 },
     ],
     moods: {
       dawn:  { tense: .4, calm: .3, sad: .3 },
@@ -543,8 +549,9 @@ const LOCATIONS = {
     name: "辰山矿坑花园", sub: "辰山植物园 · 采石坑里的花园", map: [435, 250],
     landmark: { name: "矿坑瀑布", x: 760, y: 480, box: [600, 150, 960, 720] },
     horizon: 690,
+    ground: { xMin: 180, xMax: 1140, yMin: 810, yMax: 992, hMin: 300, hMax: 485, yMinAt: (x) => (x < 580 ? 810 : 810 + (x - 580) * 0.25) },
     marks: [
-      { x: 560, y: 880, h: 400 }, { x: 330, y: 820, h: 320 }, { x: 860, y: 990, h: 480 },
+      { x: 560, y: 885, h: 385 }, { x: 330, y: 825, h: 320 }, { x: 860, y: 968, h: 460 },
     ],
     moods: {
       dawn:  { calm: .6, tense: .2, love: .2 },
@@ -563,8 +570,9 @@ const LOCATIONS = {
     name: "佘山天文台", sub: "西佘山之巅 · 百年绿穹顶", map: [220, 175],
     landmark: { name: "天文穹顶", x: 1188, y: 445, box: [955, 135, 1420, 755] },
     horizon: 530,
+    ground: { xMin: 340, xMax: 1410, yMin: 825, yMax: 990, hMin: 305, hMax: 480 },
     marks: [
-      { x: 550, y: 955, h: 440 }, { x: 820, y: 900, h: 380 }, { x: 1120, y: 855, h: 340 },
+      { x: 550, y: 940, h: 425 }, { x: 820, y: 895, h: 375 }, { x: 1120, y: 855, h: 335 },
     ],
     moods: {
       dawn:  { calm: .5, love: .3, tense: .2 },
@@ -583,8 +591,9 @@ const LOCATIONS = {
     name: "仓城老街", sub: "明清漕运古街 · 拱桥市河", map: [375, 675],
     landmark: { name: "古石拱桥", x: 455, y: 542, box: [35, 430, 875, 655] },
     horizon: 580,
+    ground: { xMin: 730, xMax: 1340, yMin: 810, yMax: 990, hMin: 280, hMax: 475 },
     marks: [
-      { x: 780, y: 920, h: 400 }, { x: 1000, y: 965, h: 450 }, { x: 1190, y: 885, h: 350 },
+      { x: 790, y: 915, h: 395 }, { x: 1000, y: 955, h: 435 }, { x: 1190, y: 880, h: 355 },
     ],
     moods: {
       dawn:  { calm: .5, sad: .3, tense: .2 },
@@ -603,8 +612,9 @@ const LOCATIONS = {
     name: "松江大学城", sub: "广富林路 · 青春高校群", map: [910, 200],
     landmark: { name: "校园图书馆", x: 940, y: 479, box: [615, 338, 1265, 620] },
     horizon: 580,
+    ground: { xMin: 220, xMax: 1360, yMin: 805, yMax: 990, hMin: 265, hMax: 475, yMinAt: (x) => (x < 700 ? 915 : 805) },
     marks: [
-      { x: 580, y: 960, h: 440 }, { x: 900, y: 910, h: 370 }, { x: 1190, y: 845, h: 290 },
+      { x: 580, y: 950, h: 430 }, { x: 900, y: 905, h: 375 }, { x: 1190, y: 845, h: 305 },
     ],
     moods: {
       dawn:  { calm: .4, joy: .4, love: .2 },
@@ -975,6 +985,8 @@ function createAudio(params) {
 <script>
 // ====== 结算：镜头评估与成片评分（纯函数，可单独测试） ======
 const SPRITE_ASPECT = {}; // "xiaoman_calm" -> w/h，启动时由素材填充
+const SPRITE_FOOT = {};   // "xiaoman_calm" -> {anchorX,lx,ly,lw,rx,ry,rw,baseY}
+const DEFAULT_FOOT = { anchorX: 0.5, lx: 0.34, ly: 0.998, lw: 0.24, rx: 0.66, ry: 0.998, rw: 0.24, baseY: 0.998 };
 
 function normMood(v) {
   const o = {}; let s = 0;
@@ -998,10 +1010,30 @@ function clampFrame(f) {
   return { w, cx: clamp(f.cx, w / 2, SCENE_W - w / 2), cy: clamp(f.cy, h / 2, SCENE_H - h / 2) };
 }
 function markHeight(loc, mark) { return mark.h || Math.max(40, (mark.y - LOCATIONS[loc].horizon) / 0.9); }
+function clampGround(loc, x, y) {
+  const gr = LOCATIONS[loc].ground;
+  if (!gr) return { x: clamp(x, 120, SCENE_W - 120), y: clamp(y, 760, 992) };
+  const cx = clamp(x, gr.xMin, gr.xMax);
+  const yMin = gr.yMinAt ? gr.yMinAt(cx) : gr.yMin;
+  return { x: cx, y: clamp(y, yMin, gr.yMax) };
+}
+function heightAtGround(loc, y) {
+  const gr = LOCATIONS[loc].ground;
+  if (!gr) return Math.max(40, (y - LOCATIONS[loc].horizon) / 0.9);
+  const u = clamp((y - gr.yMin) / Math.max(1, gr.yMax - gr.yMin), 0, 1);
+  return gr.hMin + u * (gr.hMax - gr.hMin);
+}
 function actorRect(loc, a) {
   const L = LOCATIONS[loc], mk = L.marks[a.mark] || L.marks[0];
-  const h = markHeight(loc, mk), asp = SPRITE_ASPECT[a.id + "_" + a.emo] || 0.36, w = h * asp;
-  return { x: mk.x - w / 2, y: mk.y - h, w, h, fx: mk.x, fy: mk.y - h * 0.925, feetY: mk.y };
+  const custom = a.x != null && a.y != null;
+  const pos = custom ? clampGround(loc, a.x, a.y) : mk;
+  const h = custom ? heightAtGround(loc, pos.y) : markHeight(loc, mk);
+  const key = a.id + "_" + a.emo;
+  const asp = SPRITE_ASPECT[key] || 0.36, w = h * asp;
+  const ft = SPRITE_FOOT[key] || DEFAULT_FOOT;
+  const ax = a.flip ? (1 - ft.anchorX) : ft.anchorX;
+  const x = pos.x - ax * w, y = pos.y - ft.baseY * h;
+  return { x, y, w, h, gx: pos.x, gy: pos.y, fx: pos.x, fy: y + h * 0.075, feetY: pos.y, ft };
 }
 function overlap(a, b) {
   const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
@@ -1179,18 +1211,49 @@ function lruGet(map, key, make, limit = LRU_LIMIT) {
 }
 function mkCanvas(w, h) { const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
 
+function measureFoot(im) {
+  const sh = 220, sw = Math.max(16, Math.round(im.width * sh / im.height));
+  const c = mkCanvas(sw, sh), g = c.getContext("2d");
+  g.drawImage(im, 0, 0, sw, sh);
+  const data = g.getImageData(0, 0, sw, sh).data;
+  const y0 = Math.floor(sh * 0.88);
+  let sumX = 0, cnt = 0;
+  for (let y = y0; y < sh; y++) for (let x = 0; x < sw; x++) if (data[(y * sw + x) * 4 + 3] > 128) { sumX += x; cnt++; }
+  if (!cnt) return { ...DEFAULT_FOOT };
+  const mid = sumX / cnt;
+  let lSum = 0, lCnt = 0, lMin = sw, lMax = 0, lBot = y0;
+  let rSum = 0, rCnt = 0, rMin = sw, rMax = 0, rBot = y0;
+  for (let y = y0; y < sh; y++) for (let x = 0; x < sw; x++) {
+    if (data[(y * sw + x) * 4 + 3] <= 128) continue;
+    if (x < mid) { lSum += x; lCnt++; if (x < lMin) lMin = x; if (x > lMax) lMax = x; if (y > lBot) lBot = y; }
+    else { rSum += x; rCnt++; if (x < rMin) rMin = x; if (x > rMax) rMax = x; if (y > rBot) rBot = y; }
+  }
+  const anchorX = mid / sw;
+  const lx = lCnt ? (lSum / lCnt) / sw : anchorX - 0.14;
+  const rx = rCnt ? (rSum / rCnt) / sw : anchorX + 0.14;
+  const lw = lCnt ? Math.max(0.14, (lMax - lMin + 2) / sw) : 0.22;
+  const rw = rCnt ? Math.max(0.14, (rMax - rMin + 2) / sw) : 0.22;
+  const ly = (lBot + 1) / sh, ry = (rBot + 1) / sh;
+  return { anchorX, lx, ly, lw, rx, ry, rw, baseY: (ly + ry) / 2 };
+}
+
 async function loadArt(onProgress) {
   const keys = Object.keys(typeof GAME_ART !== "undefined" ? GAME_ART : {});
   let done = 0;
   await Promise.all(keys.map((k) => new Promise((res) => {
     const im = new Image();
-    im.onload = () => { ART[k] = im; const m = k.match(/^(xiaoman|yizhou|zhou)_(\w+)$/); if (m) SPRITE_ASPECT[k] = im.width / im.height; done++; onProgress && onProgress(done / keys.length); res(); };
+    im.onload = () => {
+      ART[k] = im;
+      const m = k.match(/^(xiaoman|yizhou|zhou)_(\w+)$/);
+      if (m) { SPRITE_ASPECT[k] = im.width / im.height; SPRITE_FOOT[k] = measureFoot(im); }
+      done++; onProgress && onProgress(done / keys.length); res();
+    };
     im.onerror = () => { console.error("art failed: " + k); done++; res(); };
     im.src = GAME_ART[k];
   })));
   // 缺图时用占位，保证可玩
   for (const id of LOCATION_IDS) for (const v of ["day", "night"]) if (!ART[id + "_" + v]) ART[id + "_" + v] = placeholderScene(id, v);
-  for (const a of ACTOR_IDS) for (const e of EMOTION_IDS) if (!ART[a + "_" + e]) { ART[a + "_" + e] = placeholderActor(a); SPRITE_ASPECT[a + "_" + e] = 0.36; }
+  for (const a of ACTOR_IDS) for (const e of EMOTION_IDS) if (!ART[a + "_" + e]) { ART[a + "_" + e] = placeholderActor(a); SPRITE_ASPECT[a + "_" + e] = 0.36; SPRITE_FOOT[a + "_" + e] = { ...DEFAULT_FOOT }; }
 }
 function placeholderScene(id, v) {
   const c = mkCanvas(SCENE_W, SCENE_H), g = c.getContext("2d"), L = LOCATIONS[id];
@@ -1274,6 +1337,17 @@ function gradedSprite(id, emo, tod, weather) {
   }, 40);
 }
 
+function softShadow(g, cx, cy, rx, ry, alpha) {
+  if (rx <= 0.5 || ry <= 0.5) return;
+  g.save(); g.translate(cx, cy); g.scale(1, ry / rx);
+  const rg = g.createRadialGradient(0, 0, rx * 0.12, 0, 0, rx);
+  rg.addColorStop(0, `rgba(10,14,22,${alpha})`);
+  rg.addColorStop(0.58, `rgba(10,14,22,${(alpha * 0.48).toFixed(3)})`);
+  rg.addColorStop(1, "rgba(10,14,22,0)");
+  g.fillStyle = rg; g.beginPath(); g.arc(0, 0, rx, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
 // spec: {loc, tod, weather, actors:[{id,emo,mark}]}；src: 场景坐标矩形；dest: 目标矩形
 function drawRegion(g, spec, src, dest, opt = {}) {
   const t = opt.t || 0;
@@ -1288,15 +1362,22 @@ function drawRegion(g, spec, src, dest, opt = {}) {
   for (const { a, r } of acts) {
     const X = dest.x + (r.x - src.x) * k, Y = dest.y + (r.y - src.y) * k, W = r.w * k, H = r.h * k;
     if (X > dest.x + dest.w || X + W < dest.x || Y > dest.y + dest.h || Y + H < dest.y) continue;
-    // 脚下阴影
-    g.save(); g.globalAlpha = spec.tod === "night" ? 0.35 : 0.28; g.fillStyle = "#101418";
-    g.beginPath(); g.ellipse(X + W / 2, Y + H, W * 0.42, Math.max(2, W * 0.08), 0, 0, Math.PI * 2); g.fill(); g.restore();
-    const breathe = 1 + 0.006 * Math.sin(t * 2.1 + r.x * 0.01);
+    const gx = dest.x + (r.gx - src.x) * k, gy = dest.y + (r.gy - src.y) * k;
+    const ft = r.ft || DEFAULT_FOOT, flip = !!a.flip;
+    const fxOf = (nx) => gx + (flip ? (ft.anchorX - nx) : (nx - ft.anchorX)) * W;
+    const lx = fxOf(ft.lx), ly = Y + ft.ly * H - H * 0.002;
+    const rx = fxOf(ft.rx), ry = Y + ft.ry * H - H * 0.002;
+    const nightBoost = spec.tod === "night" ? 1.15 : 1;
+    // 1) 双脚整体地面投影（柔边渐变）
+    softShadow(g, (lx + rx) / 2, (ly + ry) / 2, Math.max(W * 0.36, Math.abs(rx - lx) * 0.9), Math.max(4.5, H * 0.03), 0.4 * nightBoost);
+    // 2) 左右鞋底紧贴地面的接触阴影（消除 3/4 站姿后脚悬空感）
+    softShadow(g, lx, ly, Math.max(W * 0.17, ft.lw * W * 0.72), Math.max(3, H * 0.017), 0.66 * nightBoost);
+    softShadow(g, rx, ry, Math.max(W * 0.17, ft.rw * W * 0.72), Math.max(3, H * 0.017), 0.66 * nightBoost);
+    const breathe = 1 + 0.006 * Math.sin(t * 2.1 + r.gx * 0.01);
     const sp = gradedSprite(a.id, a.emo, spec.tod, spec.weather);
-    const flip = a.flip;
     g.save();
-    g.translate(X + W / 2, Y + H); g.scale(flip ? -1 : 1, breathe);
-    g.drawImage(sp, -W / 2, -H, W, H);
+    g.translate(gx, gy); g.scale(flip ? -1 : 1, breathe);
+    g.drawImage(sp, -ft.anchorX * W, -ft.baseY * H, W, H);
     g.restore();
   }
   if (opt.weatherFx !== false) drawWeather(g, spec, dest, t, k);
@@ -1707,7 +1788,7 @@ function actorFace(id, emo = "calm", size = 120) {
     run.setState = st;
     persist();
     setBackdrop(sc.loc + "_" + (sc.tod === "night" ? "night" : "day"));
-    let ev = null, drag = null, take = null, tutorial = !save.tutorial;
+    let ev = null, drag = null, take = null, tutorial = !save.tutorial, hoverActor = null, lockActors = false;
     const spec = () => ({ loc: sc.loc, tod: sc.tod, weather: wx, actors: st.actors });
     const curShot = () => ({ ...spec(), frame: st.frame, perf: 0.75 });
     show("set", `
@@ -1729,8 +1810,9 @@ function actorFace(id, emo = "calm", size = 120) {
       </div>
       <div class="view-tools" style="left:${VIEW.x}px;top:${VIEW.y + VIEW.h + 10}px;width:${VIEW.w}px">
         <div class="sizes">${SIZES.map((s) => `<button class="btn sm chip" data-size="${s.id}">${s.name}</button>`).join("")}</div>
+        <button class="btn sm chip" id="b-lock" title="锁定演员站位，避免特写构图时误拖人物">锁站位</button>
         <label class="zoom">景别 <input type="range" id="zoom" min="220" max="1536" step="1" value="${Math.round(st.frame.w)}"></label>
-        <span class="tip">拖动取景框构图 · 滚轮/滑块缩放 · 空格开拍</span>
+        <span class="tip">拖演员调站位 · 拖框构图 · 滚轮缩放 · 空格开拍</span>
         <button class="btn primary rec" id="b-take">● 开拍</button>
       </div>
       <aside class="monitor-panel">
@@ -1748,6 +1830,12 @@ function actorFace(id, emo = "calm", size = 120) {
         view.addEventListener("wheel", (e) => { e.preventDefault(); setW(st.frame.w * (e.deltaY > 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
         $("#zoom").oninput = (e) => setW(+e.target.value);
         $$("[data-size]").forEach((b) => b.onclick = () => { audio.sfx("click"); snapSize(b.dataset.size); });
+        $("#b-lock").onclick = () => {
+          lockActors = !lockActors; hoverActor = null;
+          $("#b-lock").classList.toggle("on", lockActors);
+          $("#b-lock").textContent = lockActors ? "🔒 已锁站位" : "锁站位";
+          audio.sfx("click");
+        };
         $("#b-take").onclick = startTake;
         $("#b-wrap").onclick = wrap;
         $("#b-help").onclick = () => showTutorial(0);
@@ -1798,10 +1886,11 @@ function actorFace(id, emo = "calm", size = 120) {
             <button class="btn sm ${on ? "" : "primary"} tog">${on ? "下场" : "上场"}</button></div>
           ${on ? `<div class="emos">${EMOTION_IDS.map((e) => { const E = emotionOf(id, e); const dm = dominant(normMood(E.mood));
             return `<button class="emo ${on.emo === e ? "on" : ""}" data-e="${e}" style="--c:${MOOD_INFO[dm].color}">${E.name}</button>`; }).join("")}</div>
-          <div class="marks">站位 ${L.marks.map((_, i) => `<button class="mk ${on.mark === i ? "on" : ""}" data-m="${i}">${"ABC"[i]}</button>`).join("")}
+          <div class="marks">站位 ${L.marks.map((_, i) => `<button class="mk ${on.x == null && on.mark === i ? "on" : ""}" data-m="${i}">${"ABC"[i]}</button>`).join("")}
+            ${on.x != null ? `<span class="mk-free">自由</span>` : ""}
             <button class="mk flip ${on.flip ? "on" : ""}" data-f="1" title="镜像朝向">⇋</button></div>` : ""}
         </div>`;
-      }).join("") + `<p class="cast-tip">表情决定演员的情绪。镜头越近，演员的情绪越重要；镜头越远，取景地和时段的情绪越重要。</p>`;
+      }).join("") + `<p class="cast-tip">直接拖动画面中的演员可自由调整站位与远近，点 A/B/C 可快速归位。镜头越近，表情越重要。</p>`;
       $$(".actor").forEach((el) => {
         const id = el.dataset.id;
         $(".tog", el).onclick = () => {
@@ -1818,8 +1907,9 @@ function actorFace(id, emo = "calm", size = 120) {
         $$(".emo", el).forEach((b) => b.onclick = () => { const a = st.actors.find((x) => x.id === id); a.emo = b.dataset.e; audio.sfx("click"); renderCast(); updateReadout(); persist(); });
         $$(".mk[data-m]", el).forEach((b) => b.onclick = () => {
           const a = st.actors.find((x) => x.id === id), m = +b.dataset.m;
-          const other = st.actors.find((x) => x !== a && x.mark === m);
+          const other = st.actors.find((x) => x !== a && x.x == null && x.mark === m);
           if (other) other.mark = a.mark;
+          delete a.x; delete a.y;
           a.mark = m; audio.sfx("place"); renderCast(); updateReadout(); persist();
         });
         $$(".mk[data-f]", el).forEach((b) => b.onclick = () => { const a = st.actors.find((x) => x.id === id); a.flip = !a.flip; audio.sfx("click"); renderCast(); persist(); });
@@ -1843,8 +1933,21 @@ function actorFace(id, emo = "calm", size = 120) {
       }
       updateReadout();
     }
-    // 拖动 / 双指缩放
+    // 拖动（支持直接拖演员调站位、拖取景框构图、双指缩放）
     const pointers = new Map(); let pinch = null;
+    function nearFrameBorder(F, sx, sy) {
+      const m = 20 / VK;
+      if (sx < F.x - m || sx > F.x + F.w + m || sy < F.y - m || sy > F.y + F.h + m) return false;
+      return Math.abs(sx - F.x) <= m || Math.abs(sx - (F.x + F.w)) <= m || Math.abs(sy - F.y) <= m || Math.abs(sy - (F.y + F.h)) <= m;
+    }
+    function hitActor(sx, sy) {
+      if (lockActors) return null;
+      const list = st.actors.map((a) => ({ a, r: actorRect(sc.loc, a) })).sort((p, q) => q.r.feetY - p.r.feetY);
+      for (const { a, r } of list) {
+        if (sx >= r.x + r.w * 0.08 && sx <= r.x + r.w * 0.92 && sy >= r.y && sy <= r.y + r.h + 22) return a;
+      }
+      return null;
+    }
     function onDown(e) {
       if (take) return;
       e.target.setPointerCapture(e.pointerId);
@@ -1853,29 +1956,79 @@ function actorFace(id, emo = "calm", size = 120) {
       if (pointers.size === 2) { const p = [...pointers.values()]; pinch = { d: Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]), w: st.frame.w }; drag = null; return; }
       const sx = (x - VIEW.x) / VK, sy = (y - VIEW.y) / VK;
       const F = frameRect(st.frame);
-      if (inside(F, sx, sy)) drag = { dx: sx - st.frame.cx, dy: sy - st.frame.cy };
-      else { st.frame = clampFrame({ ...st.frame, cx: sx, cy: sy }); drag = { dx: 0, dy: 0 }; updateReadout(); }
+      const hit = nearFrameBorder(F, sx, sy) ? null : hitActor(sx, sy);
+      if (hit) {
+        const r = actorRect(sc.loc, hit);
+        drag = { kind: "actor", actor: hit, dx: sx - r.gx, dy: sy - r.gy };
+        hoverActor = hit;
+        audio.sfx("hover");
+        return;
+      }
+      if (inside(F, sx, sy)) drag = { kind: "frame", dx: sx - st.frame.cx, dy: sy - st.frame.cy };
+      else { st.frame = clampFrame({ ...st.frame, cx: sx, cy: sy }); drag = { kind: "frame", dx: 0, dy: 0 }; updateReadout(); }
     }
     function onMove(e) {
       const [x, y] = toDesign(e);
       if (pointers.has(e.pointerId)) pointers.set(e.pointerId, [x, y]);
       if (pinch && pointers.size === 2) { const p = [...pointers.values()]; const d = Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]); setW(pinch.w * pinch.d / Math.max(20, d)); return; }
-      if (!drag) return;
       const sx = (x - VIEW.x) / VK, sy = (y - VIEW.y) / VK;
-      st.frame = clampFrame({ ...st.frame, cx: sx - drag.dx, cy: sy - drag.dy });
-      updateReadout();
+      if (!drag) {
+        const F = frameRect(st.frame);
+        hoverActor = nearFrameBorder(F, sx, sy) ? null : hitActor(sx, sy);
+        $("#view").style.cursor = hoverActor ? "move" : "grab";
+        return;
+      }
+      if (drag.kind === "actor") {
+        const pos = clampGround(sc.loc, sx - drag.dx, sy - drag.dy);
+        drag.actor.x = Math.round(pos.x); drag.actor.y = Math.round(pos.y);
+        updateReadout();
+      } else {
+        st.frame = clampFrame({ ...st.frame, cx: sx - drag.dx, cy: sy - drag.dy });
+        updateReadout();
+      }
     }
-    function onUp(e) { pointers.delete(e.pointerId); if (pointers.size < 2) pinch = null; drag = null; persist(); }
+    function onUp(e) {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinch = null;
+      if (drag && drag.kind === "actor") { audio.sfx("place"); renderCast(); }
+      drag = null; persist();
+    }
     function drawMarks(g) {
       g.save();
+      // 拖动演员时显示可行走地面引导区
+      if (drag && drag.kind === "actor" && L.ground) {
+        const gr = L.ground;
+        g.beginPath();
+        for (let gx = gr.xMin; gx <= gr.xMax; gx += 32) {
+          const gy = gr.yMinAt ? gr.yMinAt(gx) : gr.yMin;
+          if (gx === gr.xMin) g.moveTo(gx * VK, gy * VK); else g.lineTo(gx * VK, gy * VK);
+        }
+        g.lineTo(gr.xMax * VK, (gr.yMinAt ? gr.yMinAt(gr.xMax) : gr.yMin) * VK);
+        g.lineTo(gr.xMax * VK, gr.yMax * VK); g.lineTo(gr.xMin * VK, gr.yMax * VK); g.closePath();
+        g.fillStyle = "rgba(127,208,138,.16)"; g.fill();
+        g.strokeStyle = "rgba(127,208,138,.65)"; g.setLineDash([6, 6]); g.lineWidth = 2; g.stroke(); g.setLineDash([]);
+      }
       L.marks.forEach((m, i) => {
-        const occupied = st.actors.some((a) => a.mark === i);
+        const occupied = st.actors.some((a) => { const r = actorRect(sc.loc, a); return Math.hypot(r.gx - m.x, r.gy - m.y) < 55; });
         if (occupied) return;
         const x = m.x * VK, y = m.y * VK;
-        g.strokeStyle = "rgba(255,255,255,.55)"; g.setLineDash([4, 4]); g.lineWidth = 1.5;
-        g.beginPath(); g.ellipse(x, y, 26, 7, 0, 0, 7); g.stroke();
-        g.setLineDash([]); g.fillStyle = "rgba(255,255,255,.75)"; g.font = "600 15px sans-serif"; g.textAlign = "center"; g.fillText("ABC"[i], x, y - 12);
+        g.strokeStyle = "rgba(255,255,255,.5)"; g.setLineDash([4, 4]); g.lineWidth = 1.5;
+        g.beginPath(); g.ellipse(x, y, 24, 6.5, 0, 0, 7); g.stroke();
+        g.setLineDash([]); g.fillStyle = "rgba(255,255,255,.72)"; g.font = "600 14px sans-serif"; g.textAlign = "center"; g.fillText("ABC"[i], x, y - 10);
       });
+      // 悬停或拖动演员时的金色脚环提示
+      const activeA = (drag && drag.kind === "actor" && drag.actor) || hoverActor;
+      if (activeA && st.actors.includes(activeA)) {
+        const r = actorRect(sc.loc, activeA), x = r.gx * VK, y = r.gy * VK;
+        g.strokeStyle = "#f2c94c"; g.lineWidth = 2.5; g.setLineDash([6, 4]);
+        g.beginPath(); g.ellipse(x, y, Math.max(30, r.w * VK * 0.42), 9, 0, 0, Math.PI * 2); g.stroke();
+        g.setLineDash([]);
+        const label = `${ACTORS[activeA.id].name} · 拖动调站位`;
+        g.font = "600 14px sans-serif"; const tw = g.measureText(label).width + 18;
+        g.fillStyle = "rgba(18,22,28,.86)";
+        g.beginPath(); g.roundRect(x - tw / 2, Math.min(VIEW.h - 28, y + 12), tw, 24, 12); g.fill();
+        g.fillStyle = "#f2c94c"; g.textAlign = "center"; g.fillText(label, x, Math.min(VIEW.h - 11, y + 29));
+      }
       g.restore();
     }
     function drawViewfinder(g, t) {
@@ -1994,7 +2147,7 @@ function actorFace(id, emo = "calm", size = 120) {
     }
     function showTutorial(i) {
       const steps = [
-        ["① 演员调度", "左侧让演员上场，选择表情和站位。表情决定演员的情绪。", { left: 330, top: 120 }],
+        ["① 演员调度与自由站位", "左侧让演员上场、换表情；在画面中直接拖动演员可自由调整站位与远近，也可点 A/B/C 快速归位。", { left: 330, top: 120 }],
         ["② 构图", "在画面上拖动白色取景框，用滚轮、滑块或下方的景别按钮调整远近。把人物的脸放在三分线交点上，构图分最高。", { left: 640, top: 380 }],
         ["③ 看情绪", "右侧监视器显示镜头的情绪。剧本的每个情节拍需要一种情绪：远景看地点和时段，特写看演员表情。", { left: 1250, top: 300 }],
         ["④ 开拍", "按“开拍”或空格，在指针进入绿色区域时再按一次完成对焦。每个档期可以保留 2 条镜头。", { left: 1190, top: 820 }],
@@ -2010,7 +2163,7 @@ function actorFace(id, emo = "calm", size = 120) {
     }
     updateReadout();
     // 测试接口
-    window.__G.set = { st, capture: (perf = 0.9) => { captureShot(perf); $("#b-keep") && $("#b-keep").click(); }, snapSize, setW, moveF, frame: (f) => { st.frame = clampFrame(f); updateReadout(); }, ev: () => ev, wrap: () => nextSlot() };
+    window.__G.set = { st, capture: (perf = 0.9) => { captureShot(perf); $("#b-keep") && $("#b-keep").click(); }, snapSize, setW, moveF, moveActor: (i, x, y) => { const a = st.actors[i]; if (!a) return; const p = clampGround(sc.loc, x, y); a.x = Math.round(p.x); a.y = Math.round(p.y); renderCast(); updateReadout(); }, frame: (f) => { st.frame = clampFrame(f); updateReadout(); }, ev: () => ev, wrap: () => nextSlot() };
   }
 
   // ================= 剪辑台 =================
