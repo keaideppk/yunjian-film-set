@@ -196,12 +196,22 @@ body[data-portrait="1"] #rotate { display: flex; }
 .view-tools .tip { font-size: 16px; color: var(--muted); flex: 1; }
 .btn.rec { font-size: 26px; padding: 10px 34px; }
 .monitor-panel { position: absolute; left: 1596px; top: 92px; width: 310px; }
+.mon-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.mon-head h3 { margin-bottom: 0; }
+.audio-pill { font-size: 13px; padding: 2px 9px; border-radius: 14px; background: color-mix(in srgb, var(--c, #7fc8c0) 18%, transparent); color: var(--c, #7fc8c0); border: 1px solid color-mix(in srgb, var(--c, #7fc8c0) 48%, transparent); white-space: nowrap; }
 #mon { display: block; border-radius: 6px; border: 2px solid #2c3440; }
-.readout { margin-top: 12px; }
-.ro-row { display: flex; gap: 8px; align-items: center; font-size: 17px; color: #cfc6b4; margin: 6px 0; }
+.cine-ctrl { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+.cine-row { display: grid; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); }
+.cine-row.flts { grid-template-columns: 32px repeat(6, 1fr); }
+.cine-row.mvs { grid-template-columns: 32px repeat(5, 1fr); }
+.cc { border: 1.5px solid color-mix(in srgb, var(--c, #e2b65a) 45%, transparent); background: rgba(255,255,255,.03); color: var(--c, var(--paper)); border-radius: 6px; font-size: 13px; padding: 4px 0; cursor: pointer; transition: background .15s, color .15s, border-color .15s; white-space: nowrap; }
+.cc:hover { background: rgba(255,255,255,.1); }
+.cc.on { background: var(--c, var(--gold)); color: #111; border-color: var(--c, var(--gold)); font-weight: 700; }
+.readout { margin-top: 8px; }
+.ro-row { display: flex; gap: 8px; align-items: center; font-size: 16px; color: #cfc6b4; margin: 4px 0; }
 .ro-row b { color: #fff; margin-right: 10px; }
 .size-tag { background: var(--paper); color: var(--ink) !important; padding: 0 8px; border-radius: 5px; }
-.ro-title { font-size: 18px; margin: 12px 0 8px; display: flex; gap: 8px; align-items: center; color: var(--gold); }
+.ro-title { font-size: 17px; margin: 9px 0 6px; display: flex; gap: 8px; align-items: center; color: var(--gold); }
 .ro-row.score span { width: 54px; }
 .ro-row .bar { flex: 1; height: 9px; background: rgba(255,255,255,.08); border-radius: 6px; overflow: hidden; }
 .ro-row .bar b { display: block; height: 100%; background: #e9dcc0; margin: 0; }
@@ -313,7 +323,7 @@ kbd { background: var(--paper); color: var(--ink); padding: 1px 8px; border-radi
 .card img { width: 100%; border-radius: 6px; display: block; }
 .c-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 14px; }
 .c-meta .mood-chip { font-size: 12px; padding: 0 6px; }
-.c-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+.c-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-stars { font-size: 11px; color: var(--gold); }
 .card.ghost { position: absolute; z-index: 45; pointer-events: none; opacity: .9; transform: rotate(-3deg) scale(1.05); }
 
@@ -327,6 +337,7 @@ kbd { background: var(--paper); color: var(--ink); padding: 1px 8px; border-radi
 .dm.hot { color: #ffd76a; font-size: 28px; }
 @keyframes dm { to { transform: translateX(calc(-100% - 1100px)); } }
 .pm-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: linear-gradient(0deg, rgba(0,0,0,.75), rgba(0,0,0,0)); font-size: 20px; color: #ddd3c0; }
+.pm-mood { font-style: normal; font-size: 15px; margin-left: 12px; padding: 2px 10px; border-radius: 14px; background: color-mix(in srgb, var(--c, #7fc8c0) 20%, transparent); color: var(--c, #7fc8c0); border: 1px solid color-mix(in srgb, var(--c, #7fc8c0) 50%, transparent); }
 .result-panel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 980px; background: linear-gradient(180deg, rgba(30,36,46,.97), rgba(18,22,28,.97)); border: 1px solid rgba(226,182,90,.4); border-radius: 22px; padding: 34px 50px 30px; text-align: center; animation: pop .45s; box-shadow: 0 40px 120px rgba(0,0,0,.7); z-index: 20; }
 .laurel span { display: inline-block; font-family: var(--serif); font-size: 34px; padding: 8px 34px; border-radius: 40px; border: 2px solid currentColor; }
 .laurel.tier3 { color: #f2c94c; } .laurel.tier2 { color: #dfe3ea; } .laurel.tier1 { color: #e6c46a; } .laurel.tier0 { color: #c9c3b5; }
@@ -440,6 +451,27 @@ const SIZES = [
   { id: "mid",   name: "中景", short: "中" },
   { id: "close", name: "特写", short: "特" },
 ];
+
+// 电影滤镜 / 色调预设（实时作用于取景器、监视器、成片首映与电影海报）
+const FILTERS = {
+  natural: { name: "原色", full: "自然原色", color: "#e9dcc0", mod: {} },
+  warm:    { name: "暖调", full: "胶片暖调", color: "#f0a854", mod: { love: .14, joy: .10 } },
+  teal:    { name: "冷青", full: "冷青电影", color: "#5fb8c8", mod: { tense: .16, calm: .08 } },
+  vintage: { name: "旧梦", full: "云间旧梦", color: "#cfa470", mod: { sad: .14, calm: .10 } },
+  sakura:  { name: "柔光", full: "柔光浪漫", color: "#f08aa6", mod: { love: .18, joy: .06 } },
+  noir:    { name: "黑白", full: "黑白胶片", color: "#c8cdd6", mod: { tense: .14, sad: .14, joy: -.10 } },
+};
+const FILTER_IDS = Object.keys(FILTERS);
+
+// 片场运镜预设（在监视器实时预览，并在剪辑试看与首映中完整演绎）
+const MOVES = {
+  static: { name: "定镜", icon: "■", desc: "稳固机位，凝视画面" },
+  push:   { name: "缓推", icon: "⇥", desc: "镜头缓慢推进，聚焦情绪" },
+  pull:   { name: "拉远", icon: "⇤", desc: "镜头缓缓拉远，交代松江全貌" },
+  panL:   { name: "左摇", icon: "←", desc: "镜头自右向左平稳横摇" },
+  panR:   { name: "右摇", icon: "→", desc: "镜头自左向右平稳横摇" },
+};
+const MOVE_IDS = Object.keys(MOVES);
 
 // 取景地：坐标全部基于 1536×1024 场景图
 // landmark: 地标中心与包围盒；horizon: 地平线；marks: 站位（脚底 x,y 与人物身高 h）
@@ -818,6 +850,9 @@ const DANMAKU = {
   fog: ["这雾太有电影感了", "仙气飘飘"],
   close: ["特写好评", "眼神戏", "这个特写我能看十遍"],
   far: ["大远景震撼", "松江原来这么美"],
+  filter: ["这调色太有电影味了", "滤镜质感像胶片", "高级感拉满的色调", "导演调色审美在线"],
+  noir: ["黑白胶片好高级！", "像老电影档案馆里的片子"],
+  move: ["这个运镜丝滑！", "推拉摇移有点东西", "摄影师手真稳", "运镜一下把情绪带进去了"],
   echo: ["首尾呼应！懂了！", "回到开头的地方了，泪目"],
   generic: ["前排", "松江人报到", "大学城的来了", "下次去打卡", "导演是学生？厉害", "求取景地攻略"],
 };
@@ -831,12 +866,22 @@ const AWARDS = [
 
 </script>
 <script>
-// ====== 音频：程序化配乐与音效（WebAudio，零音频文件） ======
+// ====== 音频：程序化配乐与音效（WebAudio，零音频文件，支持随情绪动态变奏） ======
 function createAudio(params) {
   const disabled = !!params.noaudio;
-  let ctx = null, master, musicBus, sfxBus, verb;
-  let musicVol = 0.55, sfxVol = 0.8;
-  let track = null, nextTime = 0, step = 0, timer = null, trackRng = null;
+  let ctx = null, master, musicBus, toneBus, moodLP, sfxBus, verb, verbWet;
+  let musicVol = 0.55, sfxVol = 0.8, musicScale = 1;
+  let track = null, mood = "calm", nextTime = 0, step = 0, timer = null, trackRng = null;
+
+  // 五种情绪对应的配乐动态色彩（速度、移调、音阶明暗、滤波器亮度、混响深度）
+  const MOOD_PROFILES = {
+    calm:  { tempo: 1.00, shift: 0,  scale: "maj", lp: 2400, rev: 0.35, energy: 0.92, pad: 0.030 },
+    joy:   { tempo: 1.15, shift: 2,  scale: "maj", lp: 3800, rev: 0.28, energy: 1.15, pad: 0.036 },
+    love:  { tempo: 0.92, shift: 5,  scale: "maj", lp: 2700, rev: 0.48, energy: 1.00, pad: 0.048 },
+    tense: { tempo: 1.08, shift: -3, scale: "phr", lp: 1450, rev: 0.42, energy: 1.06, pad: 0.042, pulse: true },
+    sad:   { tempo: 0.83, shift: -3, scale: "min", lp: 1750, rev: 0.54, energy: 0.78, pad: 0.038 },
+  };
+  const mp = () => MOOD_PROFILES[mood] || MOOD_PROFILES.calm;
 
   function ensure() {
     if (disabled) return false;
@@ -845,14 +890,16 @@ function createAudio(params) {
       if (!AC) return false;
       ctx = new AC();
       master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
-      musicBus = ctx.createGain(); musicBus.gain.value = musicVol; musicBus.connect(master);
+      musicBus = ctx.createGain(); musicBus.gain.value = musicVol * musicScale; musicBus.connect(master);
+      moodLP = ctx.createBiquadFilter(); moodLP.type = "lowpass"; moodLP.frequency.value = mp().lp; moodLP.connect(musicBus);
+      toneBus = ctx.createGain(); toneBus.gain.value = 1; toneBus.connect(moodLP);
       sfxBus = ctx.createGain(); sfxBus.gain.value = sfxVol; sfxBus.connect(master);
       // 简易混响：反馈延迟
       verb = ctx.createDelay(1); verb.delayTime.value = 0.23;
       const fb = ctx.createGain(); fb.gain.value = 0.32;
       const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400;
-      const wet = ctx.createGain(); wet.gain.value = 0.35;
-      verb.connect(lp); lp.connect(fb); fb.connect(verb); lp.connect(wet); wet.connect(musicBus);
+      verbWet = ctx.createGain(); verbWet.gain.value = mp().rev;
+      verb.connect(lp); lp.connect(fb); fb.connect(verb); lp.connect(verbWet); verbWet.connect(musicBus);
     }
     if (ctx.state === "suspended") ctx.resume();
     return true;
@@ -873,12 +920,12 @@ function createAudio(params) {
     o.start(t); o.stop(t + a + dur + 0.05);
     return o;
   }
-  // 乐器
+  // 乐器（连接至 toneBus，随情绪滤波器平滑变奏）
   function pluck(n, t, v = 0.18) { // 古筝
     const f = midi(n);
-    osc("triangle", f, t, 1.6, v, musicBus, 0.003);
-    osc("sine", f * 2, t, 0.7, v * 0.35, musicBus, 0.002);
-    osc("sine", f * 3.01, t, 0.25, v * 0.12, musicBus, 0.002);
+    osc("triangle", f, t, 1.6, v, toneBus, 0.003);
+    osc("sine", f * 2, t, 0.7, v * 0.35, toneBus, 0.002);
+    osc("sine", f * 3.01, t, 0.25, v * 0.12, toneBus, 0.002);
   }
   function flute(n, t, dur, v = 0.07) { // 竹笛
     const o = ctx.createOscillator(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
@@ -886,24 +933,24 @@ function createAudio(params) {
     lfo.frequency.value = 5.2; lg.gain.value = midi(n) * 0.008; lfo.connect(lg); lg.connect(o.frequency);
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.12);
     g.gain.setValueAtTime(v, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(musicBus); const s = ctx.createGain(); s.gain.value = 0.5; g.connect(s); s.connect(verb);
+    o.connect(g); g.connect(toneBus); const s = ctx.createGain(); s.gain.value = 0.5; g.connect(s); s.connect(verb);
     o.start(t); lfo.start(t); o.stop(t + dur + 0.05); lfo.stop(t + dur + 0.05);
   }
   function piano(n, t, v = 0.12, d = 1.8) {
     const f = midi(n);
-    osc("triangle", f, t, d, v, musicBus, 0.004);
-    osc("sine", f * 2, t, d * 0.5, v * 0.3, musicBus, 0.003);
-    osc("sine", f * 4, t, 0.15, v * 0.08, musicBus, 0.002);
+    osc("triangle", f, t, d, v, toneBus, 0.004);
+    osc("sine", f * 2, t, d * 0.5, v * 0.3, toneBus, 0.003);
+    osc("sine", f * 4, t, 0.15, v * 0.08, toneBus, 0.002);
   }
   function pad(notes, t, dur, v = 0.035) {
     for (const n of notes) {
       for (const dt of [-7, 7]) {
         const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
         o.type = "sawtooth"; o.frequency.value = midi(n); o.detune.value = dt;
-        lp.type = "lowpass"; lp.frequency.value = 900;
+        lp.type = "lowpass"; lp.frequency.value = 950;
         g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.35);
         g.gain.linearRampToValueAtTime(0.0001, t + dur);
-        o.connect(lp); lp.connect(g); g.connect(musicBus); o.start(t); o.stop(t + dur + 0.05);
+        o.connect(lp); lp.connect(g); g.connect(toneBus); o.start(t); o.stop(t + dur + 0.05);
       }
     }
   }
@@ -921,71 +968,119 @@ function createAudio(params) {
     env(g, t, 0.003, v, 0.28); o.connect(g); g.connect(musicBus); o.start(t); o.stop(t + 0.35);
   }
 
-  // 五声音阶（C 宫）
-  const PENTA = [0, 2, 4, 7, 9];
-  const scaleNote = (deg, base = 60) => base + PENTA[((deg % 5) + 5) % 5] + 12 * Math.floor(deg / 5);
+  // 三套情绪五声音阶（大调 / 小调感伤 / 悬疑变宫）
+  const SCALES = {
+    maj: [0, 2, 4, 7, 9],
+    min: [0, 3, 5, 7, 10],
+    phr: [0, 2, 3, 7, 8],
+  };
+  const scaleNote = (deg, base = 60, sc = SCALES.maj) => base + sc[((deg % 5) + 5) % 5] + 12 * Math.floor(deg / 5);
   function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 
   const TRACKS = {
-    jiangnan: { bpm: 76, play(i, t, beat) {
+    jiangnan: { bpm: 76, play(i, t, beat, m) {
       const bar = Math.floor(i / 8), pos = i % 8;
-      const roots = [0, -2, 3, 1]; const r = roots[bar % 4];
-      const arp = [0, 2, 4, 5, 4, 2, 3, 1];
-      pluck(scaleNote(r + arp[pos], 55), t, pos === 0 ? 0.2 : 0.13);
-      if (pos === 0) pluck(scaleNote(r, 43), t, 0.16);
-      if (pos % 4 === 0 && trackRng() < 0.75) {
-        const deg = 5 + Math.floor(trackRng() * 7) - 2 + r;
-        flute(scaleNote(deg, 67), t, beat * (pos === 0 ? 3.6 : 1.8));
+      const sc = SCALES[m.scale] || SCALES.maj;
+      const base = 55 + m.shift;
+      const roots = m.scale === "maj" ? [0, -2, 3, 1] : [0, -1, -2, 1];
+      const r = roots[bar % 4];
+      const arp = mood === "joy" ? [0, 2, 4, 5, 6, 4, 5, 2] : mood === "tense" ? [0, 1, 3, 0, 4, 3, 1, 0] : [0, 2, 4, 5, 4, 2, 3, 1];
+      pluck(scaleNote(r + arp[pos], base, sc), t, (pos === 0 ? 0.2 : 0.13) * m.energy);
+      if (pos === 0) pluck(scaleNote(r, base - 12, sc), t, 0.16 * m.energy);
+      if (mood === "love" && pos === 0) pad([scaleNote(r, base, sc), scaleNote(r + 2, base, sc), scaleNote(r + 4, base, sc)], t, beat * 7.5, 0.022);
+      if (m.pulse && pos % 4 === 0) kick(t, 0.12);
+      if (pos % 4 === 0 && trackRng() < (mood === "sad" ? 0.85 : 0.72)) {
+        const deg = 5 + Math.floor(trackRng() * 6) - 2 + r;
+        flute(scaleNote(deg, base + 12, sc), t, beat * (pos === 0 ? 3.6 : 1.8), (mood === "love" ? 0.085 : 0.068) * m.energy);
       }
     } },
-    piano: { bpm: 68, play(i, t, beat) {
+    piano: { bpm: 68, play(i, t, beat, m) {
       const bar = Math.floor(i / 8), pos = i % 8;
-      const prog = [[48, 55, 64, 67], [45, 52, 60, 64], [41, 48, 57, 60], [43, 50, 59, 62]];
-      const c = prog[bar % 4];
-      const pat = [0, 1, 2, 3, 2, 1, 2, 3];
-      piano(c[pat[pos]] + 12, t, pos === 0 ? 0.13 : 0.08);
-      if (pos === 0) piano(c[0], t, 0.12, 3);
-      if ((pos === 0 || pos === 5) && trackRng() < 0.8) piano(c[1 + Math.floor(trackRng() * 3)] + 24, t + beat * 0.02, 0.06, 1.2);
+      const progs = {
+        calm:  [[48, 55, 64, 67], [45, 52, 60, 64], [41, 48, 57, 60], [43, 50, 59, 62]],
+        joy:   [[50, 57, 66, 69], [47, 54, 62, 66], [43, 50, 59, 62], [45, 52, 61, 64]],
+        love:  [[53, 60, 64, 69], [50, 57, 60, 64], [46, 53, 57, 62], [48, 55, 60, 64]],
+        tense: [[45, 52, 56, 60], [43, 50, 53, 58], [41, 48, 52, 56], [40, 47, 51, 56]],
+        sad:   [[45, 52, 57, 60], [41, 48, 53, 57], [43, 50, 55, 59], [40, 47, 52, 55]],
+      };
+      const c = (progs[mood] || progs.calm)[bar % 4];
+      const pat = mood === "joy" ? [0, 2, 1, 3, 2, 3, 1, 2] : [0, 1, 2, 3, 2, 1, 2, 3];
+      piano(c[pat[pos]] + 12, t, (pos === 0 ? 0.13 : 0.08) * m.energy, mood === "sad" ? 2.4 : 1.8);
+      if (pos === 0) piano(c[0], t, 0.12 * m.energy, 3.0);
+      if (mood === "love" && pos === 0) pad([c[1], c[2], c[3]], t, beat * 7.6, 0.024);
+      if (m.pulse && pos % 4 === 0) kick(t, 0.13);
+      if ((pos === 0 || pos === 5) && trackRng() < (mood === "joy" ? 0.9 : 0.78)) {
+        piano(c[1 + Math.floor(trackRng() * 3)] + 24, t + beat * 0.02, 0.06 * m.energy, 1.3);
+      }
     } },
-    electro: { bpm: 92, play(i, t, beat) {
+    electro: { bpm: 92, play(i, t, beat, m) {
       const bar = Math.floor(i / 8), pos = i % 8;
-      const roots = [45, 41, 43, 40]; const r = roots[bar % 4];
-      if (pos === 0) pad([r + 12, r + 19, r + 24], t, beat * 8);
-      if (pos % 4 === 0) kick(t, 0.22);
-      if (pos % 2 === 1) noise(t, 0.05, 0.05, 8000, "highpass", musicBus);
-      const seq = [0, 7, 12, 7, 15, 12, 7, 3];
-      osc("square", midi(r + 24 + seq[pos]), t, 0.18, 0.025, musicBus, 0.004, 0, 0.4);
+      const roots = m.scale === "maj" ? [48, 45, 41, 43] : [45, 41, 43, 40];
+      const r = roots[bar % 4] + (mood === "joy" ? 2 : 0);
+      const chord = m.scale === "maj" ? [r + 12, r + 16, r + 19, r + 23] : [r + 12, r + 15, r + 19];
+      if (pos === 0) pad(chord, t, beat * 8, m.pad);
+      if (pos % 4 === 0 && mood !== "sad") kick(t, mood === "tense" ? 0.25 : 0.18);
+      if (pos % 2 === 1 && (mood === "tense" || mood === "joy")) noise(t, 0.045, 0.045 * m.energy, 8000, "highpass", toneBus);
+      const seq = m.scale === "maj" ? [0, 4, 7, 12, 16, 12, 7, 4] : [0, 7, 12, 7, 15, 12, 7, 3];
+      osc(mood === "love" || mood === "sad" ? "triangle" : "square", midi(r + 24 + seq[pos]), t, mood === "sad" ? 0.34 : 0.18, 0.026 * m.energy, toneBus, 0.004, 0, 0.4);
     } },
   };
 
   function schedule() {
     if (!track || !ctx) return;
-    const T = TRACKS[track]; const beat = 60 / T.bpm / 2;
+    const T = TRACKS[track], m = mp();
+    const beat = 60 / (T.bpm * m.tempo) / 2;
     while (nextTime < ctx.currentTime + 0.25) {
-      T.play(step, nextTime, beat);
+      T.play(step, nextTime, beat, m);
       nextTime += beat; step++;
     }
+  }
+
+  function applyMoodTone() {
+    if (!ctx || !moodLP || !verbWet) return;
+    const now = ctx.currentTime, m = mp();
+    moodLP.frequency.cancelScheduledValues(now);
+    moodLP.frequency.setValueAtTime(moodLP.frequency.value, now);
+    moodLP.frequency.linearRampToValueAtTime(m.lp, now + 0.55);
+    verbWet.gain.cancelScheduledValues(now);
+    verbWet.gain.setValueAtTime(verbWet.gain.value, now);
+    verbWet.gain.linearRampToValueAtTime(m.rev, now + 0.55);
   }
 
   return {
     get enabled() { return !disabled; },
     unlock() { ensure(); },
-    music(name) {
-      if (track === name) return;
+    music(name, scale = 1) {
+      musicScale = scale;
+      if (track === name) {
+        if (ctx && musicBus) {
+          musicBus.gain.cancelScheduledValues(ctx.currentTime);
+          musicBus.gain.setValueAtTime(musicBus.gain.value, ctx.currentTime);
+          musicBus.gain.linearRampToValueAtTime(musicVol * musicScale, ctx.currentTime + 0.4);
+        }
+        return;
+      }
       this.stopMusic();
       if (!name || !ensure()) { track = name; return; }
       track = name; step = 0; trackRng = rng(name.length * 977 + 13);
       nextTime = ctx.currentTime + 0.1;
+      applyMoodTone();
       musicBus.gain.cancelScheduledValues(ctx.currentTime);
       musicBus.gain.setValueAtTime(0.0001, ctx.currentTime);
-      musicBus.gain.linearRampToValueAtTime(musicVol, ctx.currentTime + 1.2);
+      musicBus.gain.linearRampToValueAtTime(musicVol * musicScale, ctx.currentTime + 1.0);
       timer = setInterval(schedule, 60); schedule();
     },
+    setMood(next) {
+      if (!MOOD_PROFILES[next] || mood === next) return;
+      mood = next;
+      applyMoodTone();
+    },
+    get mood() { return mood; },
     stopMusic() { if (timer) clearInterval(timer); timer = null; track = null; },
     get track() { return track; },
     setVolume(m, s) {
       musicVol = m; sfxVol = s;
-      if (ctx) { musicBus.gain.value = m; sfxBus.gain.value = s; }
+      if (ctx) { musicBus.gain.value = m * musicScale; sfxBus.gain.value = s; }
     },
     sfx(name) {
       if (!ensure()) return;
@@ -1040,6 +1135,26 @@ function frameRect(f) { const h = f.w * 9 / 16; return { x: f.cx - f.w / 2, y: f
 function clampFrame(f) {
   const w = clamp(f.w, 220, SCENE_W), h = w * 9 / 16;
   return { w, cx: clamp(f.cx, w / 2, SCENE_W - w / 2), cy: clamp(f.cy, h / 2, SCENE_H - h / 2) };
+}
+// 运镜插值：u ∈ [0, 1]，使用柔和正弦缓入缓出，保证画面不越界
+function cameraFrameAt(shot, u) {
+  const f = shot.frame, mv = shot.move || "static";
+  const e = 0.5 - 0.5 * Math.cos(Math.PI * clamp(u, 0, 1));
+  if (mv === "push") {
+    const w0 = Math.min(SCENE_W, f.w * 1.09), w1 = Math.max(220, f.w * 0.86);
+    return clampFrame({ ...f, w: w0 + (w1 - w0) * e });
+  }
+  if (mv === "pull") {
+    const w0 = Math.max(220, f.w * 0.86), w1 = Math.min(SCENE_W, f.w * 1.09);
+    return clampFrame({ ...f, w: w0 + (w1 - w0) * e });
+  }
+  if (mv === "panL" || mv === "panR") {
+    const w = Math.min(f.w * 0.94, SCENE_W * 0.88);
+    const dir = mv === "panR" ? 1 : -1;
+    const span = Math.min(w * 0.16, (SCENE_W - w) * 0.48);
+    return clampFrame({ ...f, w, cx: f.cx + dir * (e - 0.5) * span * 2 });
+  }
+  return clampFrame(f);
 }
 function markHeight(loc, mark) { return mark.h || Math.max(40, (mark.y - LOCATIONS[loc].horizon) / 0.9); }
 function clampGround(loc, x, y) {
@@ -1100,7 +1215,10 @@ function evaluateShot(shot) {
   for (const x of seen) actorMood = addMood(actorMood, actorMoodOf(x.a), x.presence / pSum);
   const lm = locMood(shot.loc, shot.tod, shot.weather);
   let mood = addMood({}, lm, wLoc + (1 - wLoc) * (1 - P));
-  mood = normMood(addMood(mood, actorMood, (1 - wLoc) * P));
+  mood = addMood(mood, actorMood, (1 - wLoc) * P);
+  const flt = shot.filter && FILTERS[shot.filter];
+  if (flt && shot.filter !== "natural") mood = addMood(mood, flt.mod, 1);
+  mood = normMood(mood);
   const dom = dominant(mood);
 
   // —— 景别 ——
@@ -1137,6 +1255,7 @@ function evaluateShot(shot) {
   let comp = 0.5 * thirds + 0.25 * horizon + 0.25 * framing;
   if (seen.filter((x) => x.face).length >= 2) comp = Math.min(1, comp + 0.06);
   if (seen.some((x) => x.a.pose && x.a.pose !== "stand")) { comp = Math.min(1, comp + 0.04); notes.push("电影感动作调度加分"); }
+  if (shot.move && shot.move !== "static") { comp = Math.min(1, comp + 0.03); notes.push(MOVES[shot.move].name + "运镜增强电影感"); }
   if (thirds > 0.8) notes.unshift("主体落在三分点上");
 
   // —— 地标（松江味） ——
@@ -1147,6 +1266,10 @@ function evaluateShot(shot) {
   // —— 光线 ——
   let light = TODS[shot.tod].golden ? 1 : shot.tod === "night" ? 0.86 : 0.7;
   if (shot.weather !== "clear") light = Math.min(1, light + 0.1);
+  if (flt && shot.filter !== "natural") {
+    light = Math.min(1, light + 0.05);
+    if ((flt.mod[dom] || 0) > 0) notes.push(flt.full + "强化" + MOOD_INFO[dom].name + "氛围");
+  }
   const perf = clamp(shot.perf ?? 0.6, 0, 1);
   const quality = Math.round(100 * (0.45 * comp + 0.35 * perf + 0.2 * light));
   const stars = clamp(Math.round(quality / 20), 1, 5);
@@ -1394,7 +1517,58 @@ function softShadow(g, cx, cy, rx, ry, alpha) {
   g.restore();
 }
 
-// spec: {loc, tod, weather, actors:[{id,emo,mark}]}；src: 场景坐标矩形；dest: 目标矩形
+// 电影滤镜 / 色调预设（纯 Canvas 混合模式，60fps 流畅运行于取景器、监视器、首映与海报）
+function applyFilmFilter(g, filterId, dest, t = 0) {
+  if (!filterId || filterId === "natural") return;
+  const { x, y, w, h } = dest;
+  g.save();
+  g.beginPath(); g.rect(x, y, w, h); g.clip();
+  const fill = (op, alpha, style) => {
+    g.globalCompositeOperation = op; g.globalAlpha = alpha; g.fillStyle = style; g.fillRect(x, y, w, h);
+  };
+  if (filterId === "warm") {
+    fill("soft-light", 0.36, "#ffb85c");
+    const rMax = Math.hypot(w, h) * 0.65;
+    const rg = g.createRadialGradient(x + w * 0.5, y + h * 0.22, rMax * 0.08, x + w * 0.5, y + h * 0.3, rMax);
+    rg.addColorStop(0, "rgba(255,224,162,.32)"); rg.addColorStop(1, "rgba(255,180,96,0)");
+    fill("screen", 0.42, rg);
+    fill("multiply", 0.12, "#f6dfc2");
+  } else if (filterId === "teal") {
+    fill("soft-light", 0.42, "#2db0c4");
+    fill("multiply", 0.20, "#a0c4d8");
+    const lg = g.createLinearGradient(x, y, x, y + h);
+    lg.addColorStop(0, "rgba(110,214,228,.22)"); lg.addColorStop(1, "rgba(18,52,72,.35)");
+    fill("overlay", 0.45, lg);
+  } else if (filterId === "vintage") {
+    fill("saturation", 0.44, "#808080");
+    fill("multiply", 0.25, "#e5c89e");
+    fill("screen", 0.16, "#3a2919");
+    const rMax = Math.hypot(w, h) * 0.56;
+    const rg = g.createRadialGradient(x + w / 2, y + h / 2, rMax * 0.38, x + w / 2, y + h / 2, rMax);
+    rg.addColorStop(0, "rgba(255,235,195,0)"); rg.addColorStop(1, "rgba(56,36,18,.34)");
+    fill("multiply", 1, rg);
+  } else if (filterId === "sakura") {
+    fill("soft-light", 0.34, "#ff96b6");
+    const rMax = Math.hypot(w, h) * 0.62;
+    const rg = g.createRadialGradient(x + w * 0.5, y + h * 0.28, rMax * 0.08, x + w * 0.5, y + h * 0.35, rMax);
+    rg.addColorStop(0, "rgba(255,216,228,.5)"); rg.addColorStop(0.55, "rgba(255,204,186,.16)"); rg.addColorStop(1, "rgba(255,190,210,0)");
+    fill("screen", 0.46, rg);
+    fill("overlay", 0.10, "#ffd4e4");
+  } else if (filterId === "noir") {
+    fill("saturation", 1, "#808080");
+    const lg = g.createLinearGradient(x, y, x, y + h);
+    lg.addColorStop(0, "#dedede"); lg.addColorStop(0.5, "#808080"); lg.addColorStop(1, "#1e1e1e");
+    fill("overlay", 0.26, lg);
+    fill("multiply", 0.10, "#d4dce4");
+    const rMax = Math.hypot(w, h) * 0.56;
+    const rg = g.createRadialGradient(x + w / 2, y + h / 2, rMax * 0.36, x + w / 2, y + h / 2, rMax);
+    rg.addColorStop(0, "rgba(0,0,0,0)"); rg.addColorStop(1, "rgba(0,0,0,.36)");
+    fill("source-over", 1, rg);
+  }
+  g.restore();
+}
+
+// spec: {loc, tod, weather, filter, actors:[{id,emo,pose,mark}]}；src: 场景坐标矩形；dest: 目标矩形
 function drawRegion(g, spec, src, dest, opt = {}) {
   const t = opt.t || 0;
   let blur = 0;
@@ -1428,10 +1602,12 @@ function drawRegion(g, spec, src, dest, opt = {}) {
     g.restore();
   }
   if (opt.weatherFx !== false) drawWeather(g, spec, dest, t, k);
+  if (opt.filter !== false && spec.filter && spec.filter !== "natural") applyFilmFilter(g, spec.filter, dest, t);
   if (opt.vignette) {
     const cx = dest.x + dest.w / 2, cy = dest.y + dest.h / 2;
-    const rg = g.createRadialGradient(cx, cy, dest.h * 0.35, cx, cy, dest.w * 0.62);
-    rg.addColorStop(0, "rgba(0,0,0,0)"); rg.addColorStop(1, "rgba(0,0,0,.42)");
+    const rMax = Math.hypot(dest.w, dest.h) * 0.56;
+    const rg = g.createRadialGradient(cx, cy, rMax * 0.38, cx, cy, rMax);
+    rg.addColorStop(0, "rgba(0,0,0,0)"); rg.addColorStop(1, "rgba(0,0,0,.40)");
     g.fillStyle = rg; g.fillRect(dest.x, dest.y, dest.w, dest.h);
   }
   g.restore();
@@ -1684,7 +1860,8 @@ function actorFace(id, emo = "calm", size = 120) {
         $("#b-book").onclick = () => { audio.unlock(); audio.sfx("page"); openHandbook(); };
         $("#b-films").onclick = () => { audio.unlock(); audio.sfx("page"); openFilms(); };
         $("#b-set").onclick = () => { audio.unlock(); audio.sfx("click"); openSettings(); };
-        audio.music("jiangnan");
+        audio.setMood("calm");
+        audio.music("jiangnan", 0.9);
       },
     });
   }
@@ -1718,9 +1895,11 @@ function actorFace(id, emo = "calm", size = 120) {
         <button class="btn primary big" id="b-go">🎬 开机！</button>
       </footer>`, {
       init() {
+        const previewMusic = () => { const s = SCRIPTS[chosen]; audio.setMood(s.beats[0].mood); audio.music(s.music, 0.8); };
         $$(".script-card").forEach((c) => c.onclick = () => {
           audio.sfx("click"); chosen = c.dataset.id;
           $$(".script-card").forEach((x) => x.classList.toggle("on", x === c));
+          previewMusic();
         });
         $("#b-back").onclick = () => { audio.sfx("click"); scrTitle(); };
         $("#b-go").onclick = () => {
@@ -1729,6 +1908,7 @@ function actorFace(id, emo = "calm", size = 120) {
           newRun(chosen, save.director);
           scrMap();
         };
+        previewMusic();
       },
     });
   }
@@ -1782,7 +1962,8 @@ function actorFace(id, emo = "calm", size = 120) {
         $("#b-book").onclick = () => { audio.sfx("page"); openHandbook(); };
         $("#b-home").onclick = () => { audio.sfx("click"); scrTitle(); };
         $("#b-edit").onclick = () => { if (run.shots.length < 5) return; audio.sfx("clap"); scrEdit(); };
-        audio.music(S2.music === "electro" ? "electro" : "jiangnan");
+        audio.setMood("calm");
+        audio.music(S2.music === "electro" ? "electro" : "jiangnan", 0.85);
       },
     });
   }
@@ -1830,13 +2011,17 @@ function actorFace(id, emo = "calm", size = 120) {
       slot: run.slot,
       actors: [{ id: S2.cast[0], emo: "calm", mark: 0 }],
       frame: { cx: SCENE_W / 2, cy: SCENE_H * 0.55, w: 1000 },
+      filter: "natural",
+      move: "static",
       sel: 0,
     };
+    if (!FILTERS[st.filter]) st.filter = "natural";
+    if (!MOVES[st.move]) st.move = "static";
     run.setState = st;
     persist();
     setBackdrop(sc.loc + "_" + (sc.tod === "night" ? "night" : "day"));
-    let ev = null, drag = null, take = null, tutorial = !save.tutorial, hoverActor = null, lockActors = false;
-    const spec = () => ({ loc: sc.loc, tod: sc.tod, weather: wx, actors: st.actors });
+    let ev = null, drag = null, take = null, tutorial = !save.tutorial, hoverActor = null, lockActors = false, moveT = 0;
+    const spec = () => ({ loc: sc.loc, tod: sc.tod, weather: wx, actors: st.actors, filter: st.filter, move: st.move });
     const curShot = () => ({ ...spec(), frame: st.frame, perf: 0.75 });
     show("set", `
       <header class="topbar">
@@ -1863,8 +2048,12 @@ function actorFace(id, emo = "calm", size = 120) {
         <button class="btn primary rec" id="b-take">● 开拍</button>
       </div>
       <aside class="monitor-panel">
-        <h3>监视器</h3>
+        <div class="mon-head"><h3>监视器</h3><span class="audio-pill" id="audio-pill">♪ ${MUSIC[S2.music].name}</span></div>
         <canvas id="mon" data-w="300" data-h="169"></canvas>
+        <div class="cine-ctrl">
+          <div class="cine-row flts"><span>滤镜</span>${FILTER_IDS.map((k) => `<button class="cc ${st.filter === k ? "on" : ""}" data-flt="${k}" style="--c:${FILTERS[k].color}" title="${FILTERS[k].full}">${FILTERS[k].name}</button>`).join("")}</div>
+          <div class="cine-row mvs"><span>运镜</span>${MOVE_IDS.map((k) => `<button class="cc ${st.move === k ? "on" : ""}" data-mv="${k}" title="${MOVES[k].desc}">${MOVES[k].name}</button>`).join("")}</div>
+        </div>
         <div class="readout" id="readout"></div>
       </aside>
       <div class="strip" id="strip"></div>`, {
@@ -1877,6 +2066,16 @@ function actorFace(id, emo = "calm", size = 120) {
         view.addEventListener("wheel", (e) => { e.preventDefault(); setW(st.frame.w * (e.deltaY > 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
         $("#zoom").oninput = (e) => setW(+e.target.value);
         $$("[data-size]").forEach((b) => b.onclick = () => { audio.sfx("click"); snapSize(b.dataset.size); });
+        $$("[data-flt]").forEach((b) => b.onclick = () => {
+          st.filter = b.dataset.flt; audio.sfx("click");
+          $$("[data-flt]").forEach((x) => x.classList.toggle("on", x === b));
+          updateReadout(); persist();
+        });
+        $$("[data-mv]").forEach((b) => b.onclick = () => {
+          st.move = b.dataset.mv; moveT = 0; audio.sfx("click");
+          $$("[data-mv]").forEach((x) => x.classList.toggle("on", x === b));
+          updateReadout(); persist();
+        });
         $("#b-lock").onclick = () => {
           lockActors = !lockActors; hoverActor = null;
           $("#b-lock").classList.toggle("on", lockActors);
@@ -1886,16 +2085,24 @@ function actorFace(id, emo = "calm", size = 120) {
         $("#b-take").onclick = startTake;
         $("#b-wrap").onclick = wrap;
         $("#b-help").onclick = () => showTutorial(0);
-        audio.music(null);
+        audio.music(S2.music, 0.65);
         if (tutorial) showTutorial(0);
       },
       frame(dt, t) {
+        moveT += dt;
         const g = $("#view").getContext("2d");
-        drawRegion(g, spec(), { x: 0, y: 0, w: SCENE_W, h: SCENE_H }, { x: 0, y: 0, w: VIEW.w, h: VIEW.h }, { t, dof: false });
+        drawRegion(g, spec(), { x: 0, y: 0, w: SCENE_W, h: SCENE_H }, { x: 0, y: 0, w: VIEW.w, h: VIEW.h }, { t, dof: false, filter: false });
         drawMarks(g);
         drawViewfinder(g, t);
         const m = $("#mon").getContext("2d");
-        drawShot(m, spec(), { x: 0, y: 0, w: 300, h: 169 }, { t, frame: st.frame });
+        const hasMove = st.move && st.move !== "static" && !save.settings.reduce;
+        const u = hasMove ? clamp(((moveT % 3.8) - 0.4) / 2.6, 0, 1) : 0.5;
+        const monFrame = hasMove ? cameraFrameAt({ frame: st.frame, move: st.move }, u) : st.frame;
+        drawShot(m, spec(), { x: 0, y: 0, w: 300, h: 169 }, { t, frame: monFrame });
+        if (hasMove) {
+          m.fillStyle = "rgba(0,0,0,.35)"; m.fillRect(0, 165, 300, 4);
+          m.fillStyle = "#e2b65a"; m.fillRect(0, 165, 300 * u, 4);
+        }
         if (take) updateTake(dt, t);
       },
       key(e) {
@@ -1910,6 +2117,12 @@ function actorFace(id, emo = "calm", size = 120) {
     });
     function updateReadout() {
       ev = evaluateShot(curShot());
+      audio.setMood(ev.dom);
+      const pill = $("#audio-pill");
+      if (pill) {
+        pill.textContent = `♪ ${MUSIC[S2.music].name} · ${MOOD_INFO[ev.dom].name}`;
+        pill.style.setProperty("--c", MOOD_INFO[ev.dom].color);
+      }
       const covers = S2.beats.map((b) => ev.mood[b.mood] >= 0.5);
       const banked = coverage();
       $("#readout").innerHTML = `
@@ -2089,12 +2302,31 @@ function actorFace(id, emo = "calm", size = 120) {
     function drawViewfinder(g, t) {
       const F = frameRect(st.frame); const x = F.x * VK, y = F.y * VK, w = F.w * VK, h = F.h * VK;
       g.save();
+      // 取景框内实时预览电影滤镜，框外保留片场实景原色
+      if (st.filter && st.filter !== "natural") applyFilmFilter(g, st.filter, { x, y, w, h }, t);
       g.fillStyle = "rgba(8,10,14,.55)";
       g.beginPath(); g.rect(0, 0, VIEW.w, VIEW.h); g.rect(x, y, w, h); g.fill("evenodd");
       g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 1;
       g.beginPath();
       for (const k of [1 / 3, 2 / 3]) { g.moveTo(x + w * k, y); g.lineTo(x + w * k, y + h); g.moveTo(x, y + h * k); g.lineTo(x + w, y + h * k); }
       g.stroke();
+      // 运镜轨迹指示线（缓推 / 拉远 / 左摇 / 右摇）
+      if (st.move && st.move !== "static") {
+        const endF = frameRect(cameraFrameAt({ frame: st.frame, move: st.move }, st.move === "pull" ? 0 : 1));
+        const ex = endF.x * VK, ey = endF.y * VK, ew = endF.w * VK, eh = endF.h * VK;
+        g.save();
+        g.strokeStyle = "rgba(226,182,90,.78)"; g.lineWidth = 1.6; g.setLineDash([7, 5]);
+        g.strokeRect(ex, ey, ew, eh);
+        g.setLineDash([]);
+        if (st.move === "panL" || st.move === "panR") {
+          const dir = st.move === "panR" ? 1 : -1;
+          const ay = y + h - 22, ax0 = x + w * (dir > 0 ? 0.34 : 0.66), ax1 = x + w * (dir > 0 ? 0.66 : 0.34);
+          g.strokeStyle = "#f2c94c"; g.lineWidth = 2.4;
+          g.beginPath(); g.moveTo(ax0, ay); g.lineTo(ax1, ay);
+          g.moveTo(ax1 - dir * 10, ay - 6); g.lineTo(ax1, ay); g.lineTo(ax1 - dir * 10, ay + 6); g.stroke();
+        }
+        g.restore();
+      }
       g.strokeStyle = "#fff"; g.lineWidth = 3; const c = Math.min(28, w * 0.08);
       g.beginPath();
       for (const [px, py, sx, sy] of [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]]) { g.moveTo(px + sx * c, py); g.lineTo(px, py); g.lineTo(px, py + sy * c); }
@@ -2102,9 +2334,18 @@ function actorFace(id, emo = "calm", size = 120) {
       g.strokeStyle = "rgba(255,255,255,.6)"; g.lineWidth = 1.5; g.strokeRect(x, y, w, h);
       // 三分点
       for (const ku of [1 / 3, 2 / 3]) for (const kv of [1 / 3, 2 / 3]) { g.beginPath(); g.arc(x + w * ku, y + h * kv, 4, 0, 7); g.fillStyle = "rgba(255,255,255,.7)"; g.fill(); }
-      g.fillStyle = Math.sin(t * 5) > 0 ? "#ff3b30" : "rgba(255,59,48,.35)"; g.beginPath(); g.arc(x + 16, y + 18, 6, 0, 7); g.fill();
-      g.fillStyle = "#fff"; g.font = "600 15px sans-serif"; g.textAlign = "left";
-      if (ev) g.fillText(`${sizeName(ev.size)} · ${MOOD_INFO[ev.dom].name}`, x + 28, y + 23);
+      if (ev) {
+        const fltTag = st.filter && st.filter !== "natural" ? ` · ${FILTERS[st.filter].full}` : "";
+        const mvTag = st.move && st.move !== "static" ? ` · ${MOVES[st.move].icon}${MOVES[st.move].name}` : "";
+        const txt = `${sizeName(ev.size)} · ${MOOD_INFO[ev.dom].name}${fltTag}${mvTag}`;
+        g.font = "600 14px sans-serif";
+        const tw = g.measureText(txt).width;
+        g.fillStyle = "rgba(12,16,22,.62)";
+        g.beginPath(); g.roundRect(x + 8, y + 7, tw + 30, 24, 12); g.fill();
+        g.fillStyle = Math.sin(t * 5) > 0 ? "#ff3b30" : "rgba(255,59,48,.35)"; g.beginPath(); g.arc(x + 20, y + 19, 5, 0, 7); g.fill();
+        g.fillStyle = "#fff"; g.textAlign = "left";
+        g.fillText(txt, x + 30, y + 24);
+      }
       g.restore();
     }
     // —— 开拍：场记板 + 对焦 ——
@@ -2164,7 +2405,7 @@ function actorFace(id, emo = "calm", size = 120) {
           <div class="sc-info">
             <div class="verdict">${verdict}</div>
             <div class="stars">${starStr(shot.ev.stars)}<em>${shot.ev.quality}</em></div>
-            <div class="tags">${moodChip(shot.ev.dom)}<span class="tag">${sizeName(shot.ev.size)}</span><span class="tag">构图 ${shot.ev.comp}</span><span class="tag">对焦 ${Math.round(perf * 100)}</span></div>
+            <div class="tags">${moodChip(shot.ev.dom)}<span class="tag">${sizeName(shot.ev.size)}</span>${shot.filter && shot.filter !== "natural" ? `<span class="tag">${FILTERS[shot.filter].full}</span>` : ""}${shot.move && shot.move !== "static" ? `<span class="tag">${MOVES[shot.move].icon} ${MOVES[shot.move].name}</span>` : ""}<span class="tag">构图 ${shot.ev.comp}</span><span class="tag">对焦 ${Math.round(perf * 100)}</span></div>
             <div class="notes">${shot.ev.notes.slice(0, 2).join(" · ")}</div>
             <div class="row"><button class="btn ghost sm" id="b-ng">NG 重拍</button><button class="btn primary" id="b-keep">保留这条</button></div>
           </div>
@@ -2204,7 +2445,7 @@ function actorFace(id, emo = "calm", size = 120) {
       const steps = [
         ["① 演员调度与自由站位", "左侧让演员上场、换表情；在画面中直接拖动演员可自由调整站位与远近，也可点 A/B/C 快速归位。", { left: 330, top: 120 }],
         ["② 构图", "在画面上拖动白色取景框，用滚轮、滑块或下方的景别按钮调整远近。把人物的脸放在三分线交点上，构图分最高。", { left: 640, top: 380 }],
-        ["③ 看情绪", "右侧监视器显示镜头的情绪。剧本的每个情节拍需要一种情绪：远景看地点和时段，特写看演员表情。", { left: 1250, top: 300 }],
+        ["③ 滤镜、运镜与配乐", "右侧监视器下方可切换 6 种胶片滤镜和 5 种运镜动画，配乐也会随当前镜头的主情绪实时变奏。", { left: 1180, top: 260 }],
         ["④ 开拍", "按“开拍”或空格，在指针进入绿色区域时再按一次完成对焦。每个档期可以保留 2 条镜头。", { left: 1190, top: 820 }],
       ];
       $$(".coach", stage).forEach((c) => c.remove());
@@ -2218,7 +2459,14 @@ function actorFace(id, emo = "calm", size = 120) {
     }
     updateReadout();
     // 测试接口
-    window.__G.set = { st, capture: (perf = 0.9) => { captureShot(perf); $("#b-keep") && $("#b-keep").click(); }, snapSize, setW, moveF, moveActor: (i, x, y) => { const a = st.actors[i]; if (!a) return; const p = clampGround(sc.loc, x, y); a.x = Math.round(p.x); a.y = Math.round(p.y); renderCast(); updateReadout(); }, frame: (f) => { st.frame = clampFrame(f); updateReadout(); }, ev: () => ev, wrap: () => nextSlot() };
+    window.__G.set = {
+      st, capture: (perf = 0.9) => { captureShot(perf); $("#b-keep") && $("#b-keep").click(); },
+      snapSize, setW, moveF,
+      setFilter: (f) => { if (FILTERS[f]) { st.filter = f; $$("[data-flt]").forEach((x) => x.classList.toggle("on", x.dataset.flt === f)); updateReadout(); persist(); } },
+      setMove: (mv) => { if (MOVES[mv]) { st.move = mv; moveT = 0; $$("[data-mv]").forEach((x) => x.classList.toggle("on", x.dataset.mv === mv)); updateReadout(); persist(); } },
+      moveActor: (i, x, y) => { const a = st.actors[i]; if (!a) return; const p = clampGround(sc.loc, x, y); a.x = Math.round(p.x); a.y = Math.round(p.y); renderCast(); updateReadout(); },
+      frame: (f) => { st.frame = clampFrame(f); updateReadout(); }, ev: () => ev, wrap: () => nextSlot(),
+    };
   }
 
   // ================= 剪辑台 =================
@@ -2239,7 +2487,7 @@ function actorFace(id, emo = "calm", size = 120) {
       <div class="monitor"><canvas id="emon" data-w="960" data-h="540"></canvas><div class="sub" id="esub"></div></div>
       <aside class="edit-side">
         <h3>剪辑语法</h3><div id="bonus"></div>
-        <h3>配乐</h3>
+        <h3>配乐 <small id="m-mood">随镜头情绪动态变奏</small></h3>
         <div class="musics">${Object.keys(MUSIC).map((k) => `<button class="music ${run.music === k ? "on" : ""}" data-k="${k}"><b>${MUSIC[k].name}</b><small>${MUSIC[k].desc}</small></button>`).join("")}</div>
         <h3>片名</h3>
         <div class="title-row"><input id="title" maxlength="14" value="${esc(run.title)}"><button class="btn sm" id="b-dice" title="换一个">🎲</button></div>
@@ -2265,7 +2513,9 @@ function actorFace(id, emo = "calm", size = 120) {
         $("#title").oninput = (e) => { run.title = e.target.value.trim() || S2.name; $("#tt").textContent = run.title; persist(); };
         $("#b-dice").onclick = () => { audio.sfx("click"); const p = TITLE_POOL[run.script].filter((x) => x !== run.title); run.title = pick(p); $("#title").value = run.title; $("#tt").textContent = run.title; persist(); };
         $("#b-premiere").onclick = () => { if (run.cut.some((s) => !s)) return; stopPlay(); audio.sfx("clap"); scrPremiere(); };
-        audio.music(run.music);
+        const initShot = run.cut.find(Boolean) || run.shots[0];
+        if (initShot) syncEditMood(initShot);
+        audio.music(run.music, 0.9);
       },
       frame(dt, t) {
         const g = $("#emon").getContext("2d");
@@ -2277,8 +2527,9 @@ function actorFace(id, emo = "calm", size = 120) {
           if (playT >= seq.length * DUR) { stopPlay(); return; }
           const idx = Math.floor(playT / DUR), u = (playT - idx * DUR) / DUR;
           const { s, i } = seq[idx];
-          const f = s.frame, k = 1.02 - 0.06 * u;
-          drawShot(g, s, { x: 0, y: 0, w: 960, h: 540 }, { t, frame: clampFrame({ ...f, w: f.w * k }) });
+          syncEditMood(s);
+          const fr = s.move && s.move !== "static" ? cameraFrameAt(s, u) : clampFrame({ ...s.frame, w: s.frame.w * (1.02 - 0.06 * u) });
+          drawShot(g, s, { x: 0, y: 0, w: 960, h: 540 }, { t, frame: fr });
           $("#esub").textContent = subtitle(S2.beats[i], s);
           $$(".tslot").forEach((el) => el.classList.toggle("playing", +el.dataset.i === i));
           return;
@@ -2286,15 +2537,27 @@ function actorFace(id, emo = "calm", size = 120) {
         const shot = preview || run.cut.find(Boolean) || run.shots[0];
         previewT += dt;
         if (!shot) { g.fillStyle = "#0b0d10"; g.fillRect(0, 0, 960, 540); return; }
-        const f = shot.frame, k = 1 - 0.04 * ((previewT % 6) / 6);
-        drawShot(g, shot, { x: 0, y: 0, w: 960, h: 540 }, { t, frame: { ...f, w: f.w * k } });
+        const fr = shot.move && shot.move !== "static" && !save.settings.reduce
+          ? cameraFrameAt(shot, clamp(((previewT % 3.8) - 0.35) / 2.6, 0, 1))
+          : clampFrame({ ...shot.frame, w: shot.frame.w * (1 - 0.04 * ((previewT % 6) / 6)) });
+        drawShot(g, shot, { x: 0, y: 0, w: 960, h: 540 }, { t, frame: fr });
       },
     });
+    function syncEditMood(s) {
+      if (!s || !s.ev) return;
+      audio.setMood(s.ev.dom);
+      const mm = $("#m-mood");
+      if (mm) {
+        mm.textContent = `♪ 动态变奏 · ${MOOD_INFO[s.ev.dom].name}`;
+        mm.style.color = MOOD_INFO[s.ev.dom].color;
+      }
+    }
     function stopPlay() {
       playing = false;
       const b = $("#b-play"); if (b) b.textContent = "▶ 试看";
       $$(".tslot").forEach((el) => el.classList.remove("playing"));
       const s = preview || run.cut.find(Boolean) || run.shots[0] || null;
+      if (s) syncEditMood(s);
       const i = run.cut.indexOf(s);
       const sub = $("#esub");
       if (sub) sub.textContent = s ? (i >= 0 ? subtitle(S2.beats[i], s) : `${LOCATIONS[s.loc].name} · ${TODS[s.tod].name} · ${sizeName(s.ev.size)}`) : "";
@@ -2302,6 +2565,7 @@ function actorFace(id, emo = "calm", size = 120) {
     function setPreview(s) {
       if (playing) stopPlay();
       preview = s; previewT = 0;
+      if (s) syncEditMood(s);
       const i = run.cut.indexOf(s);
       $("#esub").textContent = s ? (i >= 0 ? subtitle(S2.beats[i], s) : `${LOCATIONS[s.loc].name} · ${TODS[s.tod].name} · ${sizeName(s.ev.size)}`) : "";
     }
@@ -2332,7 +2596,7 @@ function actorFace(id, emo = "calm", size = 120) {
         <div class="card ${run.cut.includes(s) ? "used" : ""} ${selected === s ? "sel" : ""}" data-id="${s.id}">
           <img src="${thumbURL(s)}" draggable="false">
           <div class="c-meta">${moodChip(s.ev.dom)}<span>${SIZES.find((x) => x.id === s.ev.size).short}</span></div>
-          <div class="c-sub">${LOCATIONS[s.loc].name} · ${TODS[s.tod].name}</div>
+          <div class="c-sub">${LOCATIONS[s.loc].name}${s.filter && s.filter !== "natural" ? "·" + FILTERS[s.filter].name : s.move && s.move !== "static" ? "·" + MOVES[s.move].name : "·" + TODS[s.tod].name}</div>
           <div class="c-stars">${starStr(s.ev.stars)}</div>
         </div>`).join("");
       $$("#bin .card").forEach((el) => {
@@ -2386,7 +2650,7 @@ function actorFace(id, emo = "calm", size = 120) {
     const result = scoreFilm(run.script, run.cut, run.music);
     const SHOT_T = 4.6, TITLE_T = 3, END_T = 2.4, FADE = 0.6;
     const total = TITLE_T + SHOT_T * 5 + END_T;
-    let T = 0, done = false, danmakuQueue = buildDanmaku(result, SHOT_T, TITLE_T);
+    let T = 0, done = false, lastShotIdx = -1, danmakuQueue = buildDanmaku(result, SHOT_T, TITLE_T);
     const sw = Math.round(SCREEN.w), sh = Math.round(SCREEN.h);
     show("premiere", `
       <div class="bg cinema" style="background-image:url(${urlOf("cinema")})"></div>
@@ -2395,10 +2659,13 @@ function actorFace(id, emo = "calm", size = 120) {
         <div class="danmaku" id="dm"></div>
       </div>
       <div class="dark"></div>
-      <div class="pm-bar"><span>上海科技影都 · ${esc(run.director)} 作品《${esc(run.title)}》首映</span><div class="pm-acts">${fsBtn()}<button class="btn ghost sm" id="b-skip">跳过 ›</button></div></div>
+      <div class="pm-bar"><span>上海科技影都 · ${esc(run.director)} 作品《${esc(run.title)}》首映 <i class="pm-mood" id="pm-mood"></i></span><div class="pm-acts">${fsBtn()}<button class="btn ghost sm" id="b-skip">跳过 ›</button></div></div>
       <div id="result"></div>`, {
       init() {
-        audio.music(run.music);
+        const m0 = S2.beats[0].mood;
+        audio.setMood(m0); audio.music(run.music, 1);
+        const pm = $("#pm-mood");
+        if (pm) { pm.textContent = `♪ ${MUSIC[run.music].name} · ${MOOD_INFO[m0].name}`; pm.style.setProperty("--c", MOOD_INFO[m0].color); }
         $("#b-skip").onclick = () => { T = total; };
       },
       frame(dt, t) {
@@ -2415,6 +2682,13 @@ function actorFace(id, emo = "calm", size = 120) {
           g.globalAlpha = 1;
         } else if (T < TITLE_T + SHOT_T * 5) {
           const lt = T - TITLE_T, i = Math.min(4, Math.floor(lt / SHOT_T)), u = (lt - i * SHOT_T) / SHOT_T;
+          if (i !== lastShotIdx) {
+            lastShotIdx = i;
+            const dm = run.cut[i].ev.dom;
+            audio.setMood(dm);
+            const pm = $("#pm-mood");
+            if (pm) { pm.textContent = `♪ ${MUSIC[run.music].name} · ${MOOD_INFO[dm].name}`; pm.style.setProperty("--c", MOOD_INFO[dm].color); }
+          }
           drawFilmShot(g, run.cut[i], u, t, 1);
           const fadeIn = clamp((lt - i * SHOT_T) / FADE, 0, 1);
           if (i > 0 && fadeIn < 1) { g.globalAlpha = 1 - fadeIn; drawFilmShot(g, run.cut[i - 1], 1, t, 1); g.globalAlpha = 1; }
@@ -2427,6 +2701,10 @@ function actorFace(id, emo = "calm", size = 120) {
           g.lineWidth = 5; g.strokeStyle = "rgba(0,0,0,.75)"; g.strokeText(line, sw / 2, sh * 0.94 - 22); g.fillStyle = "#fff"; g.fillText(line, sw / 2, sh * 0.94 - 22);
           g.globalAlpha = 1;
         } else if (T < total) {
+          if (lastShotIdx !== 99) {
+            lastShotIdx = 99;
+            audio.setMood(result.total >= 72 ? "love" : "calm");
+          }
           const lt = T - TITLE_T - SHOT_T * 5, a = clamp(Math.min(lt / 0.5, (END_T - lt) / 0.5), 0, 1);
           g.globalAlpha = a; g.fillStyle = "#e9dcc0"; g.textAlign = "center";
           g.font = `700 64px ${getComputedStyle(document.body).getPropertyValue("--serif")}`; g.fillText("完", sw / 2, sh * 0.48);
@@ -2439,11 +2717,12 @@ function actorFace(id, emo = "calm", size = 120) {
       },
     });
     function drawFilmShot(g, shot, u, t) {
-      const f = shot.frame, sz = shot.ev.size;
-      // 运镜：远景缓慢横摇，近景缓慢推进
       let fr;
-      if (sz === "far" || sz === "full") fr = clampFrame({ ...f, w: f.w * 0.96, cx: f.cx + (u - 0.5) * f.w * 0.05 });
-      else fr = clampFrame({ ...f, w: f.w * (1.04 - 0.08 * u) });
+      if (shot.move && shot.move !== "static") fr = cameraFrameAt(shot, u);
+      else {
+        const f = shot.frame;
+        fr = clampFrame({ ...f, w: f.w * (1.015 - 0.03 * u) });
+      }
       drawShot(g, shot, { x: 0, y: 0, w: sw, h: sh }, { t, frame: fr });
     }
     function spawnDanmaku(d) {
@@ -2500,6 +2779,9 @@ function actorFace(id, emo = "calm", size = 120) {
       if (s.weather !== "clear") lines.push([pick(DANMAKU[s.weather]), false]);
       if (e.size === "close") lines.push([pick(DANMAKU.close), false]);
       if (e.size === "far") lines.push([pick(DANMAKU.far), false]);
+      if (s.filter === "noir") lines.push([pick(DANMAKU.noir), true]);
+      else if (s.filter && s.filter !== "natural") lines.push([pick(DANMAKU.filter), false]);
+      if (s.move && s.move !== "static") lines.push([pick(DANMAKU.move), false]);
       if (i === 4 && run.cut[0].loc === s.loc) lines.push([pick(DANMAKU.echo), true]);
       while (lines.length < 5) lines.push([pick(DANMAKU.generic), false]);
       lines.forEach(([text, hot], j) => out.push({ t: T0 + i * SHOT_T + 0.5 + (j / lines.length) * (SHOT_T - 0.8) + Math.random() * 0.3, text, hot, lane: (i * 3 + j * 2) % 7 }));
